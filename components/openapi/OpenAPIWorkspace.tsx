@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Play, Sparkles, FileText, GitBranch, Wand2 } from 'lucide-react';
 import APISpecUploader from './APISpecUploader';
 import APIEndpointsViewer from './APIEndpointsViewer';

@@ -3,6 +3,12 @@ import OpenAI from "openai";
 import { APIEndpoint } from "@/lib/types/openapi";
 
 const API_KEY = process.env.OPENAI_API_KEY as string;
+
+// Validate API key at module load time
+if (!API_KEY) {
+  console.error("OPENAI_API_KEY is not configured");
+}
+
 const openai = new OpenAI({ apiKey: API_KEY });
 
 /**
@@ -11,6 +17,17 @@ const openai = new OpenAI({ apiKey: API_KEY });
  */
 export async function POST(req: NextRequest) {
   try {
+    // Validate API key
+    if (!API_KEY) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "OpenAI API key is not configured. Please set OPENAI_API_KEY in your environment variables.",
+        },
+        { status: 500 }
+      );
+    }
+
     const body = await req.json();
     const { description, endpoints, specId } = body;
 
@@ -93,7 +110,31 @@ Analyze this and create an optimal workflow.`;
       );
     }
 
-    const workflowData = JSON.parse(aiResponse);
+    // Parse AI response with error handling
+    let workflowData;
+    try {
+      workflowData = JSON.parse(aiResponse);
+    } catch (parseError) {
+      console.error("Failed to parse AI response:", parseError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to parse AI response. The AI returned invalid JSON.",
+        },
+        { status: 500 }
+      );
+    }
+
+    // Validate that the AI response has the expected structure
+    if (!workflowData.selectedEndpoints || !Array.isArray(workflowData.selectedEndpoints)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "AI response is missing required 'selectedEndpoints' array",
+        },
+        { status: 500 }
+      );
+    }
 
     // Create workflow steps from the AI response
     const steps = workflowData.selectedEndpoints.map(
