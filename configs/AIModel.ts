@@ -33,7 +33,7 @@ files:{
   - When asked then only use this package to import, here are some packages available to import and use (date-fns,react-chartjs-2) only when it required
   
   - For placeholder images, please use a https://archive.org/download/placeholder-image/placeholder-image.jpg
-  -Add Emoji icons whenever needed to give good user experinence
+  -Add Emoji icons whenever needed to give good user experience
   - all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
 
 - By default, this template supports JSX syntax with Tailwind CSS classes, React hooks, and Lucide React for icons. Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
