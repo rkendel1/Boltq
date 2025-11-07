@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, Sparkles, FileText, GitBranch } from 'lucide-react';
+import { Play, Sparkles, FileText, GitBranch, Lightbulb } from 'lucide-react';
 import APISpecUploader from './APISpecUploader';
 import APIEndpointsViewer from './APIEndpointsViewer';
 import WorkflowBuilder from './WorkflowBuilder';
@@ -9,10 +9,12 @@ import WorkflowExecutionUI from './WorkflowExecutionUI';
 import ParameterMappingUI from './ParameterMappingUI';
 import WorkflowTemplatesLibrary from './WorkflowTemplatesLibrary';
 import DynamicFlowGenerator from './DynamicFlowGenerator';
+import OpportunityDiscovery from './OpportunityDiscovery';
 import { APIWorkflow } from '@/lib/types/openapi';
 
 const OpenAPIWorkspace: React.FC = () => {
   const [currentSpecId, setCurrentSpecId] = useState<string | null>(null);
+  const [currentSpec, setCurrentSpec] = useState<Record<string, unknown> | null>(null);
   const [showWorkflowBuilder, setShowWorkflowBuilder] = useState(false);
   const [selectedEndpoints, setSelectedEndpoints] = useState<string[]>([]);
   const [selectedWorkflow, setSelectedWorkflow] = useState<APIWorkflow | null>(null);
@@ -20,9 +22,13 @@ const OpenAPIWorkspace: React.FC = () => {
   const [showParameterMapping, setShowParameterMapping] = useState(false);
   const [showTemplatesLibrary, setShowTemplatesLibrary] = useState(false);
   const [showDynamicFlowGenerator, setShowDynamicFlowGenerator] = useState(false);
+  const [showOpportunityDiscovery, setShowOpportunityDiscovery] = useState(false);
 
-  const handleSpecUploaded = (specId: string) => {
+  const handleSpecUploaded = (specId: string, spec?: Record<string, unknown>) => {
     setCurrentSpecId(specId);
+    if (spec) {
+      setCurrentSpec(spec);
+    }
     setShowWorkflowBuilder(false);
     setSelectedEndpoints([]);
   };
@@ -92,6 +98,17 @@ const OpenAPIWorkspace: React.FC = () => {
             <h3 className="text-white font-medium text-sm">Dynamic Flow</h3>
             <p className="text-xs text-gray-400 mt-1">AI-powered generation</p>
           </button>
+
+          {currentSpec && (
+            <button
+              onClick={() => setShowOpportunityDiscovery(true)}
+              className="bg-[#272727] hover:bg-[#323232] border border-gray-600 hover:border-yellow-500 rounded-lg p-4 text-left transition-all"
+            >
+              <Lightbulb className="h-6 w-6 text-yellow-500 mb-2" />
+              <h3 className="text-white font-medium text-sm">Opportunities</h3>
+              <p className="text-xs text-gray-400 mt-1">AI-powered insights</p>
+            </button>
+          )}
 
           {selectedWorkflow && (
             <>
@@ -225,6 +242,13 @@ const OpenAPIWorkspace: React.FC = () => {
         <DynamicFlowGenerator
           onGenerate={handleDynamicFlowGenerate}
           onClose={() => setShowDynamicFlowGenerator(false)}
+        />
+      )}
+
+      {showOpportunityDiscovery && currentSpec && (
+        <OpportunityDiscovery
+          spec={currentSpec}
+          onClose={() => setShowOpportunityDiscovery(false)}
         />
       )}
     </div>

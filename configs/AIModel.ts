@@ -85,3 +85,76 @@ export const GenAICode = {
     };
   },
 };
+
+// System prompt for API opportunity analysis
+const API_OPPORTUNITY_ANALYSIS_PROMPT = `You are an expert API architect and developer. Analyze the provided OpenAPI specification to identify opportunities for new capabilities and features.
+
+For each opportunity, consider:
+1. Missing CRUD operations (if GET exists, are POST/PUT/DELETE/PATCH missing?)
+2. Composite endpoints that could combine multiple operations
+3. Batch operation possibilities (e.g., bulk create, update, delete)
+4. Filtering and search capabilities
+5. Pagination improvements
+6. Related endpoints that could be linked
+7. Authentication/authorization patterns
+8. Rate limiting opportunities
+9. Caching strategies
+10. Webhook/event notification possibilities
+11. API versioning improvements
+12. Documentation gaps
+
+For each opportunity:
+- Categorize it appropriately
+- Assess implementation effort (low/medium/high)
+- Assess potential impact/value (low/medium/high)
+- Identify which existing endpoints are affected
+- Provide a clear rationale
+- Suggest implementation approach if possible
+- Include an example if helpful
+
+Prioritize opportunities that are:
+- Low effort, high impact (quick wins)
+- Close to being implementable with existing infrastructure
+- Add significant value with minimal changes
+
+Return the response in JSON format following this schema:
+{
+  "opportunities": [
+    {
+      "id": "unique-id",
+      "category": "missing_crud|composite_endpoint|batch_operation|filtering_search|pagination|related_endpoints|authentication|rate_limiting|caching|webhooks|versioning|documentation",
+      "title": "Brief title",
+      "description": "What this opportunity adds",
+      "rationale": "Why this would be valuable",
+      "effort": "low|medium|high",
+      "impact": "low|medium|high",
+      "affectedEndpoints": ["list", "of", "endpoint", "paths"],
+      "suggestedImplementation": "How to implement this",
+      "example": "Code or usage example if applicable",
+      "dependencies": ["Any dependencies or prerequisites"]
+    }
+  ]
+}`;
+
+// API opportunity analysis session wrapper
+export const analyzeAPIOpportunities = {
+  sendMessage: async (openapiSpec: string) => {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: API_OPPORTUNITY_ANALYSIS_PROMPT },
+        { role: "user", content: `Analyze this OpenAPI specification and identify opportunities:\n\n${openapiSpec}` },
+      ],
+      temperature: 0.7,
+      top_p: 0.95,
+      max_tokens: 8192,
+      response_format: { type: "json_object" },
+    });
+
+    return {
+      response: {
+        text: () => response.choices[0]?.message?.content || "",
+      },
+    };
+  },
+};

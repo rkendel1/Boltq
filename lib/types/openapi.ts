@@ -112,3 +112,53 @@ export interface BackendResponse<T> {
   error?: string;
   message?: string;
 }
+
+/**
+ * API Opportunity Discovery types
+ */
+
+export type OpportunityCategory = 
+  | 'missing_crud'
+  | 'composite_endpoint'
+  | 'batch_operation'
+  | 'filtering_search'
+  | 'pagination'
+  | 'related_endpoints'
+  | 'authentication'
+  | 'rate_limiting'
+  | 'caching'
+  | 'webhooks'
+  | 'versioning'
+  | 'documentation';
+
+export type EffortLevel = 'low' | 'medium' | 'high';
+export type ImpactLevel = 'low' | 'medium' | 'high';
+
+export interface APIOpportunity {
+  id: string;
+  category: OpportunityCategory;
+  title: string;
+  description: string;
+  rationale: string;
+  effort: EffortLevel;
+  impact: ImpactLevel;
+  affectedEndpoints: string[];
+  suggestedImplementation?: string;
+  example?: string;
+  dependencies?: string[];
+}
+
+export interface OpportunityAnalysisResult {
+  apiName: string;
+  apiVersion: string;
+  totalEndpoints: number;
+  analyzedAt: number;
+  opportunities: APIOpportunity[];
+  summary: {
+    totalOpportunities: number;
+    byCategory: Record<OpportunityCategory, number>;
+    byEffort: Record<EffortLevel, number>;
+    byImpact: Record<ImpactLevel, number>;
+    quickWins: APIOpportunity[]; // Low effort, high impact
+  };
+}

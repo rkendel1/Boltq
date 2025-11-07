@@ -5,7 +5,7 @@ import { Upload, Link as LinkIcon, Loader2Icon } from 'lucide-react';
 import axios from 'axios';
 
 interface APISpecUploaderProps {
-  onSpecUploaded?: (specId: string) => void;
+  onSpecUploaded?: (specId: string, spec?: Record<string, unknown>) => void;
 }
 
 const APISpecUploader: React.FC<APISpecUploaderProps> = ({ onSpecUploaded }) => {
@@ -30,7 +30,7 @@ const APISpecUploader: React.FC<APISpecUploaderProps> = ({ onSpecUploaded }) => 
       if (response.data.success) {
         setSuccess('OpenAPI spec loaded successfully!');
         if (onSpecUploaded && response.data.data?.specId) {
-          onSpecUploaded(response.data.data.specId);
+          onSpecUploaded(response.data.data.specId, response.data.data?.spec);
         }
         setUrl('');
       } else {
@@ -70,7 +70,7 @@ const APISpecUploader: React.FC<APISpecUploaderProps> = ({ onSpecUploaded }) => 
       if (response.data.success) {
         setSuccess('OpenAPI spec uploaded successfully!');
         if (onSpecUploaded && response.data.data?.specId) {
-          onSpecUploaded(response.data.data.specId);
+          onSpecUploaded(response.data.data.specId, spec);
         }
       } else {
         setError(response.data.error || 'Failed to upload OpenAPI spec');
