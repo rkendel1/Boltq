@@ -64,7 +64,7 @@ const APISpecUploader: React.FC<APISpecUploaderProps> = ({ onSpecUploaded }) => 
         return;
       }
       
-      const spec = result.data;
+      const spec = result.data as Record<string, unknown>;
       const response = await axios.post('/api/openapi', { spec });
       
       if (response.data.success) {
