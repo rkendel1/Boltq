@@ -53,8 +53,18 @@ const APISpecUploader: React.FC<APISpecUploaderProps> = ({ onSpecUploaded }) => 
 
     try {
       const text = await file.text();
-      const spec = JSON.parse(text);
       
+      // Auto-detect format and convert if needed
+      const { processOpenAPIContent } = await import('@/lib/utils/yamlConverter');
+      const result = await processOpenAPIContent(text);
+      
+      if (!result.success) {
+        setError(result.error || 'Failed to process file');
+        setLoading(false);
+        return;
+      }
+      
+      const spec = result.data;
       const response = await axios.post('/api/openapi', { spec });
       
       if (response.data.success) {
