@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Play, Sparkles, FileText, GitBranch } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Play, Sparkles, FileText, GitBranch, Wand2 } from 'lucide-react';
 import APISpecUploader from './APISpecUploader';
 import APIEndpointsViewer from './APIEndpointsViewer';
 import WorkflowBuilder from './WorkflowBuilder';
@@ -9,7 +9,9 @@ import WorkflowExecutionUI from './WorkflowExecutionUI';
 import ParameterMappingUI from './ParameterMappingUI';
 import WorkflowTemplatesLibrary from './WorkflowTemplatesLibrary';
 import DynamicFlowGenerator from './DynamicFlowGenerator';
-import { APIWorkflow } from '@/lib/types/openapi';
+import NaturalLanguageFlowBuilder from './NaturalLanguageFlowBuilder';
+import { APIWorkflow, APIEndpoint } from '@/lib/types/openapi';
+import axios from 'axios';
 
 const OpenAPIWorkspace: React.FC = () => {
   const [currentSpecId, setCurrentSpecId] = useState<string | null>(null);
@@ -20,11 +22,26 @@ const OpenAPIWorkspace: React.FC = () => {
   const [showParameterMapping, setShowParameterMapping] = useState(false);
   const [showTemplatesLibrary, setShowTemplatesLibrary] = useState(false);
   const [showDynamicFlowGenerator, setShowDynamicFlowGenerator] = useState(false);
+  const [showNLFlowBuilder, setShowNLFlowBuilder] = useState(false);
+  const [availableEndpoints, setAvailableEndpoints] = useState<APIEndpoint[]>([]);
 
   const handleSpecUploaded = (specId: string) => {
     setCurrentSpecId(specId);
     setShowWorkflowBuilder(false);
     setSelectedEndpoints([]);
+    // Fetch endpoints for the spec
+    fetchEndpoints(specId);
+  };
+
+  const fetchEndpoints = async (specId: string) => {
+    try {
+      const response = await axios.get(`/api/openapi/endpoints?specId=${specId}`);
+      if (response.data.success && response.data.data) {
+        setAvailableEndpoints(response.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch endpoints:', err);
+    }
   };
 
   const handleWorkflowSave = (workflow: Partial<APIWorkflow>) => {
@@ -60,6 +77,20 @@ const OpenAPIWorkspace: React.FC = () => {
     // You can convert flowData to a workflow here
   };
 
+  const handleNLWorkflowGenerated = (workflow: Partial<APIWorkflow>) => {
+    console.log('NL workflow generated:', workflow);
+    const fullWorkflow: APIWorkflow = {
+      id: `workflow-${Date.now()}`,
+      name: workflow.name || 'Unnamed Workflow',
+      description: workflow.description,
+      steps: workflow.steps || [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    setSelectedWorkflow(fullWorkflow);
+    setShowNLFlowBuilder(false);
+  };
+
   return (
     <div className="h-full p-6 overflow-y-auto">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -75,6 +106,17 @@ const OpenAPIWorkspace: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {currentSpecId && availableEndpoints.length > 0 && (
+            <button
+              onClick={() => setShowNLFlowBuilder(true)}
+              className="bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border border-purple-500 rounded-lg p-4 text-left transition-all shadow-lg"
+            >
+              <Wand2 className="h-6 w-6 text-white mb-2" />
+              <h3 className="text-white font-medium text-sm">Natural Language</h3>
+              <p className="text-xs text-purple-100 mt-1">Describe your flow in plain English</p>
+            </button>
+          )}
+          
           <button
             onClick={() => setShowTemplatesLibrary(true)}
             className="bg-[#272727] hover:bg-[#323232] border border-gray-600 hover:border-blue-500 rounded-lg p-4 text-left transition-all"
@@ -225,6 +267,15 @@ const OpenAPIWorkspace: React.FC = () => {
         <DynamicFlowGenerator
           onGenerate={handleDynamicFlowGenerate}
           onClose={() => setShowDynamicFlowGenerator(false)}
+        />
+      )}
+
+      {showNLFlowBuilder && currentSpecId && (
+        <NaturalLanguageFlowBuilder
+          specId={currentSpecId}
+          endpoints={availableEndpoints}
+          onWorkflowGenerated={handleNLWorkflowGenerated}
+          onClose={() => setShowNLFlowBuilder(false)}
         />
       )}
     </div>
