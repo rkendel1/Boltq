@@ -7,6 +7,8 @@ A modern Next.js web application inspired by Bolt, featuring AI-powered chat and
 ## Features
 
 - AI Chat and Code Generation (GEMINI integration)
+- **OpenAPI Workflow Builder** - Transform any API into conversational workflows
+- **Magoc Backend Integration** - Process OpenAPI specifications automatically
 - User Authentication
 - Workspace Management
 - Modular UI Components
@@ -103,16 +105,42 @@ Use the `.env.example` file as the authoritative list of variables. Copy it to `
 ## Project structure
 
 ```
-app/           # Next.js app dir (routes, API handlers, pages)
-components/    # UI components (Header, Hero, workspace views)
-configs/       # AI model config (e.g. `configs/AIModel.ts`)
-context/       # React context providers
-convex/        # Convex schema, functions and generated code
-data/          # Static data like prompts, lookups, colors
-lib/           # Utilities and helpers
-providers/     # App-wide providers (Convex client, Theme, Message)
-public/        # Static assets (put banner image here)
+app/              # Next.js app dir (routes, API handlers, pages)
+  api/            # API routes including OpenAPI and workflow endpoints
+  openapi-builder/ # OpenAPI workflow builder page
+components/       # UI components (Header, Hero, workspace views)
+  openapi/        # OpenAPI-specific components (uploader, viewer, builder)
+configs/          # AI model config (e.g. `configs/AIModel.ts`)
+context/          # React context providers
+convex/           # Convex schema, functions and generated code
+data/             # Static data like prompts, lookups, colors
+docs/             # Documentation including Magoc integration guide
+lib/              # Utilities and helpers
+  services/       # Backend service clients (e.g., backendService.ts)
+  types/          # TypeScript type definitions (e.g., openapi.ts)
+providers/        # App-wide providers (Convex client, Theme, Message)
+public/           # Static assets (put banner image here)
 ```
+
+## OpenAPI Workflow Integration
+
+This project integrates with the [Magoc backend](https://github.com/rkendel1/Magoc) to process OpenAPI specifications and create conversational workflows.
+
+### Quick Start
+
+1. Start the Magoc backend:
+   ```bash
+   uvx automagik-tools@latest serve --tool genie --transport sse --port 8000
+   ```
+
+2. Add the backend URL to `.env`:
+   ```
+   NEXT_PUBLIC_MAGOC_BACKEND_URL=http://localhost:8000
+   ```
+
+3. Access the API Builder at `/openapi-builder` after signing in
+
+For detailed integration instructions, see [docs/MAGOC_INTEGRATION.md](docs/MAGOC_INTEGRATION.md)
 
 ## Notes on Convex
 
