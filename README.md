@@ -6,7 +6,7 @@ A modern Next.js web application inspired by Bolt, featuring AI-powered chat and
 
 ## Features
 
-- AI Chat and Code Generation (GEMINI integration)
+- AI Chat and Code Generation (OpenAI integration)
 - **OpenAPI Workflow Builder** - Transform any API into conversational workflows
 - **Magoc Backend Integration** - Process OpenAPI specifications automatically
 - User Authentication
