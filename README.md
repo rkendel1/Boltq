@@ -8,6 +8,7 @@ A modern Next.js web application inspired by Bolt, featuring AI-powered chat and
 
 - AI Chat and Code Generation (OpenAI integration)
 - **OpenAPI Workflow Builder** - Transform any API into conversational workflows
+- **API Opportunity Discovery** - AI-powered analysis to identify new API capabilities and quick wins
 - **Magoc Backend Integration** - Process OpenAPI specifications automatically
 - User Authentication
 - Workspace Management
@@ -141,6 +142,33 @@ This project integrates with the [Magoc backend](https://github.com/rkendel1/Mag
 3. Access the API Builder at `/openapi-builder` after signing in
 
 For detailed integration instructions, see [docs/MAGOC_INTEGRATION.md](docs/MAGOC_INTEGRATION.md)
+
+## API Opportunity Discovery
+
+Discover hidden potential in your APIs with AI-powered analysis. This feature identifies:
+
+- **Missing CRUD operations** - Incomplete endpoint coverage
+- **Composite endpoints** - Opportunities to combine operations
+- **Batch operations** - Bulk processing capabilities
+- **Quick wins** - High-value, low-effort improvements
+- And 8 more opportunity categories!
+
+### How to Use
+
+1. Upload an OpenAPI specification in the API Builder
+2. Click the **"Opportunities"** button (💡 lightbulb icon)
+3. Click **"Start Analysis"** to analyze your API
+4. Review categorized opportunities with effort/impact ratings
+5. Filter by category or effort level to prioritize
+
+Each opportunity includes:
+- Clear rationale for why it's valuable
+- Affected endpoints
+- Implementation approach
+- Code examples (when applicable)
+- Dependencies
+
+For detailed documentation, see [docs/API_OPPORTUNITY_DISCOVERY.md](docs/API_OPPORTUNITY_DISCOVERY.md)
 
 ## Notes on Convex
 
