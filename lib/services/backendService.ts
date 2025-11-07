@@ -186,6 +186,30 @@ class BackendService {
   }
 
   /**
+   * Generate a workflow from natural language description
+   */
+  async generateWorkflowFromNL(
+    description: string,
+    endpoints: APIEndpoint[],
+    specId: string
+  ): Promise<BackendResponse<{
+    workflow: Partial<APIWorkflow>;
+    explanation: string;
+    aiReasoning: Array<{ endpointId: string; reasoning: string }>;
+  }>> {
+    try {
+      const response = await this.client.post('/api/workflows/generate-from-nl', {
+        description,
+        endpoints,
+        specId,
+      });
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
    * Test an API endpoint
    */
   async testEndpoint(

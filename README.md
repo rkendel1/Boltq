@@ -8,6 +8,7 @@ A modern Next.js web application inspired by Bolt, featuring AI-powered chat and
 
 - AI Chat and Code Generation (OpenAI integration)
 - **OpenAPI Workflow Builder** - Transform any API into conversational workflows
+- **Natural Language Flow Builder** - Describe workflows in plain English and let AI determine endpoints and order
 - **Magoc Backend Integration** - Process OpenAPI specifications automatically
 - User Authentication
 - Workspace Management
@@ -139,6 +140,18 @@ This project integrates with the [Magoc backend](https://github.com/rkendel1/Mag
    ```
 
 3. Access the API Builder at `/openapi-builder` after signing in
+
+### Natural Language Flow Builder
+
+The Natural Language Flow Builder allows you to describe your desired workflow in plain English:
+
+1. Upload your OpenAPI specification
+2. Click the "Natural Language" button
+3. Describe what you want to achieve (e.g., "Create a user, send welcome email, and add to default group")
+4. AI will automatically determine which endpoints to use and in what order
+5. Review and use the generated workflow
+
+For detailed documentation, see [docs/NATURAL_LANGUAGE_FLOW.md](docs/NATURAL_LANGUAGE_FLOW.md)
 
 For detailed integration instructions, see [docs/MAGOC_INTEGRATION.md](docs/MAGOC_INTEGRATION.md)
 
