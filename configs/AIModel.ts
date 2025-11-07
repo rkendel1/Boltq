@@ -139,6 +139,12 @@ Return the response in JSON format following this schema:
 // API opportunity analysis session wrapper
 export const analyzeAPIOpportunities = {
   sendMessage: async (openapiSpec: string) => {
+    // Validate spec size to prevent excessive API costs
+    const MAX_SPEC_LENGTH = 50000; // ~50KB limit
+    if (openapiSpec.length > MAX_SPEC_LENGTH) {
+      throw new Error(`OpenAPI spec too large (${openapiSpec.length} chars). Maximum allowed is ${MAX_SPEC_LENGTH} chars.`);
+    }
+
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [

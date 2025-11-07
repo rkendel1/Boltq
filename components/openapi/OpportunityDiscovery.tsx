@@ -14,6 +14,7 @@ import {
   Sparkles,
   Filter
 } from 'lucide-react';
+
 import { OpportunityAnalysisResult, APIOpportunity, OpportunityCategory } from '@/lib/types/openapi';
 
 interface OpportunityDiscoveryProps {

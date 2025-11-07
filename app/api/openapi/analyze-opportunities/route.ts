@@ -31,8 +31,13 @@ export async function POST(req: NextRequest) {
       aiResponse = JSON.parse(responseText);
     } catch (parseError) {
       console.error("Error parsing AI response:", parseError);
+      console.error("AI response text:", responseText.substring(0, 500)); // Log first 500 chars for debugging
       return NextResponse.json(
-        { success: false, error: "Failed to parse AI analysis" },
+        { 
+          success: false, 
+          error: "Failed to parse AI analysis. The AI response was not in the expected format.",
+          message: parseError instanceof Error ? parseError.message : "JSON parse error"
+        },
         { status: 500 }
       );
     }
@@ -71,9 +76,9 @@ export async function POST(req: NextRequest) {
     const quickWins: APIOpportunity[] = [];
 
     opportunities.forEach((opportunity) => {
-      byCategory[opportunity.category] = (byCategory[opportunity.category] || 0) + 1;
-      byEffort[opportunity.effort] = (byEffort[opportunity.effort] || 0) + 1;
-      byImpact[opportunity.impact] = (byImpact[opportunity.impact] || 0) + 1;
+      byCategory[opportunity.category] = (byCategory[opportunity.category] ?? 0) + 1;
+      byEffort[opportunity.effort] = (byEffort[opportunity.effort] ?? 0) + 1;
+      byImpact[opportunity.impact] = (byImpact[opportunity.impact] ?? 0) + 1;
 
       // Quick wins are low effort, high impact
       if (opportunity.effort === 'low' && opportunity.impact === 'high') {
