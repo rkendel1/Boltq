@@ -38,7 +38,27 @@ export function detectFormat(content: string): 'yaml' | 'json' | 'unknown' {
 
 /**
  * Simple YAML to JSON converter
- * Note: This is a basic implementation. For production, use a library like js-yaml
+ * 
+ * LIMITATIONS:
+ * - Basic indentation-based parsing only
+ * - Does not support complex YAML features (anchors, aliases, multi-line strings)
+ * - Best for simple OpenAPI specifications
+ * 
+ * PRODUCTION RECOMMENDATION:
+ * For production use with complex YAML files, install js-yaml:
+ * ```bash
+ * npm install js-yaml @types/js-yaml
+ * ```
+ * Then replace this function with:
+ * ```typescript
+ * import yaml from 'js-yaml';
+ * return { success: true, data: yaml.load(yamlContent) };
+ * ```
+ * 
+ * TODO: Migrate to js-yaml when:
+ * - Processing complex YAML with anchors/aliases
+ * - Handling multi-line strings or special YAML features
+ * - Production deployment with diverse OpenAPI specs
  */
 export function yamlToJson(yamlContent: string): ConversionResult {
   try {
@@ -108,26 +128,34 @@ export function yamlToJson(yamlContent: string): ConversionResult {
 
 /**
  * Convert YAML OpenAPI spec to JSON
- * For production use, install and use the 'js-yaml' package:
- * npm install js-yaml @types/js-yaml
+ * 
+ * CURRENT IMPLEMENTATION:
+ * Uses a simple YAML parser suitable for basic OpenAPI specifications.
+ * This is sufficient for most standard OpenAPI/Swagger files but has limitations.
+ * 
+ * MIGRATION PATH:
+ * When complex YAML features are needed, install js-yaml:
+ * 1. Run: npm install js-yaml @types/js-yaml
+ * 2. Uncomment the js-yaml code below
+ * 3. Remove the yamlToJson() fallback
+ * 
+ * The simple parser is currently used to avoid additional dependencies
+ * while providing basic YAML support for standard OpenAPI specs.
  */
 export async function convertYamlToJson(yamlContent: string): Promise<ConversionResult> {
   try {
-    // Try to use js-yaml if available
-    if (typeof window !== 'undefined') {
-      // Client-side: use dynamic import
-      try {
-        // For now, use our simple parser
-        // In production, replace with: const yaml = await import('js-yaml');
-        // return { success: true, data: yaml.load(yamlContent) };
-        return yamlToJson(yamlContent);
-      } catch {
-        return yamlToJson(yamlContent);
-      }
-    } else {
-      // Server-side
-      return yamlToJson(yamlContent);
-    }
+    // OPTION 1: Use js-yaml (recommended for production with complex YAML)
+    // Uncomment when js-yaml is installed:
+    // if (typeof window !== 'undefined') {
+    //   const yaml = await import('js-yaml');
+    //   return { success: true, data: yaml.load(yamlContent) };
+    // } else {
+    //   const yaml = require('js-yaml');
+    //   return { success: true, data: yaml.load(yamlContent) };
+    // }
+    
+    // OPTION 2: Use simple parser (current - works for standard OpenAPI)
+    return yamlToJson(yamlContent);
   } catch (error) {
     return {
       success: false,

@@ -66,6 +66,8 @@ const WorkflowExecutionUI: React.FC<WorkflowExecutionUIProps> = ({ workflow, onC
 
         try {
           // Execute the step (call the API endpoint)
+          // Parameter precedence: step.parameters (from mapping) takes priority over global parameters
+          // This allows step-specific overrides while maintaining fallback behavior
           const response = await axios.post(`/api/workflows/${workflow.id}/execute-step`, {
             stepId: step.id,
             parameters: step.parameters || parameters,
