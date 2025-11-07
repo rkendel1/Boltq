@@ -57,9 +57,23 @@ class BackendService {
 
   /**
    * Parse OpenAPI spec from URL
+   * Note: The user-provided URL is validated and sent to the backend for processing.
+   * The backend is responsible for secure URL fetching with additional safeguards.
    */
   async parseOpenAPIFromUrl(url: string): Promise<BackendResponse<OpenAPISpec>> {
     try {
+      // Validate URL format to prevent SSRF attacks
+      // Only http and https protocols are allowed
+      const urlObj = new URL(url);
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        return {
+          success: false,
+          error: 'Only HTTP and HTTPS URLs are allowed',
+        };
+      }
+
+      // Send validated URL to backend for processing
+      // The backend service performs additional validation and secure fetching
       const response = await this.client.post('/api/openapi/parse-url', { url });
       return response.data;
     } catch (error) {
@@ -72,7 +86,9 @@ class BackendService {
    */
   async getAPIEndpoints(specId: string): Promise<BackendResponse<APIEndpoint[]>> {
     try {
-      const response = await this.client.get(`/api/openapi/${specId}/endpoints`);
+      // Sanitize specId to prevent path traversal
+      const sanitizedSpecId = encodeURIComponent(specId);
+      const response = await this.client.get(`/api/openapi/${sanitizedSpecId}/endpoints`);
       return response.data;
     } catch (error) {
       return this.handleError(error);
@@ -84,7 +100,9 @@ class BackendService {
    */
   async getEndpointDetails(specId: string, endpointId: string): Promise<BackendResponse<APIEndpoint>> {
     try {
-      const response = await this.client.get(`/api/openapi/${specId}/endpoints/${endpointId}`);
+      const sanitizedSpecId = encodeURIComponent(specId);
+      const sanitizedEndpointId = encodeURIComponent(endpointId);
+      const response = await this.client.get(`/api/openapi/${sanitizedSpecId}/endpoints/${sanitizedEndpointId}`);
       return response.data;
     } catch (error) {
       return this.handleError(error);
@@ -120,7 +138,8 @@ class BackendService {
    */
   async getWorkflow(workflowId: string): Promise<BackendResponse<APIWorkflow>> {
     try {
-      const response = await this.client.get(`/api/workflows/${workflowId}`);
+      const sanitizedWorkflowId = encodeURIComponent(workflowId);
+      const response = await this.client.get(`/api/workflows/${sanitizedWorkflowId}`);
       return response.data;
     } catch (error) {
       return this.handleError(error);
@@ -132,7 +151,8 @@ class BackendService {
    */
   async updateWorkflow(workflowId: string, workflow: Partial<APIWorkflow>): Promise<BackendResponse<APIWorkflow>> {
     try {
-      const response = await this.client.put(`/api/workflows/${workflowId}`, workflow);
+      const sanitizedWorkflowId = encodeURIComponent(workflowId);
+      const response = await this.client.put(`/api/workflows/${sanitizedWorkflowId}`, workflow);
       return response.data;
     } catch (error) {
       return this.handleError(error);
@@ -144,7 +164,8 @@ class BackendService {
    */
   async deleteWorkflow(workflowId: string): Promise<BackendResponse<void>> {
     try {
-      const response = await this.client.delete(`/api/workflows/${workflowId}`);
+      const sanitizedWorkflowId = encodeURIComponent(workflowId);
+      const response = await this.client.delete(`/api/workflows/${sanitizedWorkflowId}`);
       return response.data;
     } catch (error) {
       return this.handleError(error);
@@ -156,7 +177,8 @@ class BackendService {
    */
   async executeWorkflow(workflowId: string, inputs?: Record<string, unknown>): Promise<BackendResponse<unknown>> {
     try {
-      const response = await this.client.post(`/api/workflows/${workflowId}/execute`, { inputs });
+      const sanitizedWorkflowId = encodeURIComponent(workflowId);
+      const response = await this.client.post(`/api/workflows/${sanitizedWorkflowId}/execute`, { inputs });
       return response.data;
     } catch (error) {
       return this.handleError(error);
@@ -172,7 +194,9 @@ class BackendService {
     parameters?: Record<string, unknown>
   ): Promise<BackendResponse<unknown>> {
     try {
-      const response = await this.client.post(`/api/openapi/${specId}/endpoints/${endpointId}/test`, {
+      const sanitizedSpecId = encodeURIComponent(specId);
+      const sanitizedEndpointId = encodeURIComponent(endpointId);
+      const response = await this.client.post(`/api/openapi/${sanitizedSpecId}/endpoints/${sanitizedEndpointId}/test`, {
         parameters,
       });
       return response.data;
