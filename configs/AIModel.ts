@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-const API_KEY = process.env.OPENAI_API_KEY as string;
+const API_KEY = process.env.OPENAI_API_KEY || "dummy-key-for-build";
 const openai = new OpenAI({ apiKey: API_KEY });
 
 // System prompt for code generation
