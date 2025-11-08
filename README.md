@@ -127,6 +127,16 @@ public/           # Static assets (put banner image here)
 
 This project integrates with the [Magoc backend](https://github.com/rkendel1/Magoc) to process OpenAPI specifications and create conversational workflows.
 
+> **Important**: The Magoc backend is a powerful Python-based MCP (Model Context Protocol) toolkit designed specifically for API spec evaluation. It features the automagik-genie orchestrator that transforms any API into an intelligent agent. All AI-powered workflow generation should leverage this specialized backend rather than being implemented in the Next.js layer.
+
+### Architecture
+
+**Proper Separation of Concerns**:
+- **Magoc Python Backend**: OpenAPI spec processing, AI-powered workflow generation, MCP tool orchestration
+- **Next.js Frontend**: User interface, routing, data persistence, thin API proxy layer
+
+See [docs/BACKEND_DELEGATION_ARCHITECTURE.md](docs/BACKEND_DELEGATION_ARCHITECTURE.md) for complete architectural details.
+
 ### Quick Start
 
 1. Start the Magoc backend:
@@ -151,9 +161,12 @@ The Natural Language Flow Builder allows you to describe your desired workflow i
 4. AI will automatically determine which endpoints to use and in what order
 5. Review and use the generated workflow
 
-For detailed documentation, see [docs/NATURAL_LANGUAGE_FLOW.md](docs/NATURAL_LANGUAGE_FLOW.md)
-
-For detailed integration instructions, see [docs/MAGOC_INTEGRATION.md](docs/MAGOC_INTEGRATION.md)
+For detailed documentation, see:
+- [Backend Delegation Architecture](docs/BACKEND_DELEGATION_ARCHITECTURE.md) - Understanding the proper architecture
+- [Refactoring Guide](docs/REFACTORING_GUIDE.md) - How to delegate operations to Magoc
+- [Before/After Comparison](docs/BEFORE_AFTER_COMPARISON.md) - See the benefits of proper delegation
+- [Natural Language Flow](docs/NATURAL_LANGUAGE_FLOW.md) - Feature documentation
+- [Magoc Integration](docs/MAGOC_INTEGRATION.md) - Integration instructions
 
 ## Notes on Convex
 
