@@ -32,5 +32,38 @@ export default defineSchema({
     workspace: v.optional(v.id("workspaces")),
     createdAt: v.number(),
     updatedAt: v.number()
+  }),
+  tabSnapshots: defineTable({
+    userId: v.id("users"),
+    tabId: v.string(), // 'spec', 'goal', 'test', 'component', 'edit'
+    snapshotData: v.any(), // Tab-specific state data
+    conversationId: v.optional(v.string()), // Links to conversation session
+    createdAt: v.number(),
+    updatedAt: v.number()
+  }),
+  componentGenerations: defineTable({
+    componentId: v.string(),
+    name: v.string(),
+    description: v.optional(v.string()),
+    code: v.string(), // Generated component code
+    bindings: v.any(), // Data bindings configuration
+    apiEndpoints: v.array(v.string()), // Associated API endpoints
+    user: v.id("users"),
+    specId: v.optional(v.string()),
+    conversationId: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number()
+  }),
+  teamAccounts: defineTable({
+    teamId: v.string(),
+    name: v.string(),
+    description: v.optional(v.string()),
+    owner: v.id("users"),
+    members: v.array(v.object({
+      userId: v.id("users"),
+      role: v.string() // 'owner', 'editor', 'viewer'
+    })),
+    createdAt: v.number(),
+    updatedAt: v.number()
   })
 })
