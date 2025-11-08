@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Upload, FileText, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Upload, FileText, CheckCircle, Key, Save } from 'lucide-react';
 import { ConversationContext } from '@/lib/types/conversational';
 import APISpecUploader from '@/components/openapi/APISpecUploader';
 
@@ -13,6 +13,9 @@ interface SpecTabProps {
 
 const SpecTab: React.FC<SpecTabProps> = ({ conversationContext, onUpdateContext, onMessage }) => {
   const [uploadComplete, setUploadComplete] = useState(false);
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+  const [markAsReusable, setMarkAsReusable] = useState(true);
 
   const handleSpecUploaded = (specId: string) => {
     setUploadComplete(true);
@@ -28,11 +31,35 @@ const SpecTab: React.FC<SpecTabProps> = ({ conversationContext, onUpdateContext,
         }
       }
     }));
-    onMessage(`API specification uploaded successfully! Spec ID: ${specId}. What would you like to build with this API?`);
+    onMessage(`API specification uploaded successfully! Spec ID: ${specId}. ${markAsReusable ? 'This spec is marked as reusable for future conversations.' : ''} Would you like to configure API keys for testing?`);
+  };
+
+  const handleSaveApiKeys = async () => {
+    if (!conversationContext.specId) return;
+
+    try {
+      // In production, these should be encrypted before storing
+      const response = await fetch('/api/specs/api-keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          specId: conversationContext.specId,
+          apiKeys,
+        }),
+      });
+
+      if (response.ok) {
+        setShowApiKeyInput(false);
+        onMessage('API keys saved securely. They will be used for testing and in generated components.');
+      }
+    } catch (error) {
+      console.error('Error saving API keys:', error);
+      onMessage('Failed to save API keys. Please try again.');
+    }
   };
 
   return (
-    <div className="h-full bg-gray-900 p-6">
+    <div className="h-full bg-gray-900 p-6 overflow-auto">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -46,16 +73,98 @@ const SpecTab: React.FC<SpecTabProps> = ({ conversationContext, onUpdateContext,
         {conversationContext.specId && (
           <div className="bg-green-900/20 border border-green-700 rounded-lg p-4 mb-6 flex items-center gap-3">
             <CheckCircle className="h-5 w-5 text-green-500" />
-            <div>
+            <div className="flex-1">
               <p className="text-green-400 font-medium">Spec loaded successfully</p>
               <p className="text-sm text-gray-400">Ready to define goals and build components</p>
             </div>
+            <button
+              onClick={() => setShowApiKeyInput(!showApiKeyInput)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Key className="h-4 w-4" />
+              {showApiKeyInput ? 'Cancel' : 'Configure API Keys'}
+            </button>
+          </div>
+        )}
+
+        {/* API Keys Configuration */}
+        {showApiKeyInput && conversationContext.specId && (
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-6">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <Key className="h-5 w-5 text-blue-500" />
+              API Keys Configuration
+            </h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Store API keys securely for use in testing and generated components. Keys are encrypted before storage.
+            </p>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  API Key / Bearer Token
+                </label>
+                <input
+                  type="password"
+                  value={apiKeys.bearerToken || ''}
+                  onChange={(e) => setApiKeys({ ...apiKeys, bearerToken: e.target.value })}
+                  placeholder="Enter your API key"
+                  className="w-full bg-gray-900 text-white rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Client ID (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={apiKeys.clientId || ''}
+                  onChange={(e) => setApiKeys({ ...apiKeys, clientId: e.target.value })}
+                  placeholder="Enter client ID if required"
+                  className="w-full bg-gray-900 text-white rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Client Secret (Optional)
+                </label>
+                <input
+                  type="password"
+                  value={apiKeys.clientSecret || ''}
+                  onChange={(e) => setApiKeys({ ...apiKeys, clientSecret: e.target.value })}
+                  placeholder="Enter client secret if required"
+                  className="w-full bg-gray-900 text-white rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={handleSaveApiKeys}
+              disabled={!apiKeys.bearerToken}
+              className="mt-4 bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Save className="h-4 w-4" />
+              Save API Keys Securely
+            </button>
           </div>
         )}
 
         {/* Uploader */}
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+          <div className="mb-4">
+            <label className="flex items-center gap-2 text-sm text-gray-300">
+              <input
+                type="checkbox"
+                checked={markAsReusable}
+                onChange={(e) => setMarkAsReusable(e.target.checked)}
+                className="rounded"
+              />
+              <span>Mark this spec as reusable for future conversations</span>
+            </label>
+          </div>
           <APISpecUploader onSpecUploaded={handleSpecUploaded} />
+        </div>
         </div>
 
         {/* Instructions */}

@@ -21,7 +21,10 @@ export default defineSchema({
     spec: v.any(), // Full OpenAPI spec object
     user: v.id("users"),
     createdAt: v.number(),
-    updatedAt: v.number()
+    updatedAt: v.number(),
+    isShared: v.optional(v.boolean()), // Can be reused across conversations
+    usageCount: v.optional(v.number()), // Track how many times spec is reused
+    apiKeys: v.optional(v.any()), // Encrypted API keys for this spec
   }),
   apiWorkflows: defineTable({
     workflowId: v.string(),
@@ -30,6 +33,10 @@ export default defineSchema({
     steps: v.any(), // Array of workflow steps
     user: v.id("users"),
     workspace: v.optional(v.id("workspaces")),
+    specId: v.optional(v.string()), // Link to parent spec
+    isTemplate: v.optional(v.boolean()), // Can be reused as starting point
+    parentFlowId: v.optional(v.string()), // If created from a template
+    usageCount: v.optional(v.number()), // Track template usage
     createdAt: v.number(),
     updatedAt: v.number()
   }),
