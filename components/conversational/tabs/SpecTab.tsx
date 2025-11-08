@@ -165,7 +165,6 @@ const SpecTab: React.FC<SpecTabProps> = ({ conversationContext, onUpdateContext,
           </div>
           <APISpecUploader onSpecUploaded={handleSpecUploaded} />
         </div>
-        </div>
 
         {/* Instructions */}
         {!conversationContext.specId && (
