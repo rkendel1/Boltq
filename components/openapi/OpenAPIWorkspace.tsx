@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, Sparkles, FileText, GitBranch, Wand2 } from 'lucide-react';
+import { Play, Sparkles, FileText, GitBranch, Wand2, Zap } from 'lucide-react';
 import APISpecUploader from './APISpecUploader';
 import APIEndpointsViewer from './APIEndpointsViewer';
 import WorkflowBuilder from './WorkflowBuilder';
@@ -10,8 +10,25 @@ import ParameterMappingUI from './ParameterMappingUI';
 import WorkflowTemplatesLibrary from './WorkflowTemplatesLibrary';
 import DynamicFlowGenerator from './DynamicFlowGenerator';
 import NaturalLanguageFlowBuilder from './NaturalLanguageFlowBuilder';
+import FlowPatternLearner from './FlowPatternLearner';
 import { APIWorkflow, APIEndpoint } from '@/lib/types/openapi';
 import axios from 'axios';
+
+interface SuggestedFlow {
+  id: string;
+  name: string;
+  description: string;
+  useCase: string;
+  endpoints: string[];
+  category: string;
+  complexity: string;
+}
+
+interface GeneratedWorkflow {
+  flowId: string;
+  workflow: Partial<APIWorkflow>;
+  appliedPatterns?: string;
+}
 
 const OpenAPIWorkspace: React.FC = () => {
   const [currentSpecId, setCurrentSpecId] = useState<string | null>(null);
@@ -24,23 +41,45 @@ const OpenAPIWorkspace: React.FC = () => {
   const [showDynamicFlowGenerator, setShowDynamicFlowGenerator] = useState(false);
   const [showNLFlowBuilder, setShowNLFlowBuilder] = useState(false);
   const [availableEndpoints, setAvailableEndpoints] = useState<APIEndpoint[]>([]);
+  const [suggestedFlows, setSuggestedFlows] = useState<SuggestedFlow[]>([]);
+  const [showPatternLearner, setShowPatternLearner] = useState(false);
+  const [hasConfiguredFirstFlow, setHasConfiguredFirstFlow] = useState(false);
 
-  const handleSpecUploaded = (specId: string) => {
+  const handleSpecUploaded = async (specId: string) => {
     setCurrentSpecId(specId);
     setShowWorkflowBuilder(false);
     setSelectedEndpoints([]);
     // Fetch endpoints for the spec
-    fetchEndpoints(specId);
+    await fetchEndpoints(specId);
   };
 
   const fetchEndpoints = async (specId: string) => {
     try {
       const response = await axios.get(`/api/openapi/endpoints?specId=${specId}`);
       if (response.data.success && response.data.data) {
-        setAvailableEndpoints(response.data.data);
+        const endpoints = response.data.data;
+        setAvailableEndpoints(endpoints);
+        
+        // Auto-fetch suggested flows when endpoints are loaded
+        fetchSuggestedFlows(specId, endpoints);
       }
     } catch (err) {
       console.error('Failed to fetch endpoints:', err);
+    }
+  };
+
+  const fetchSuggestedFlows = async (specId: string, endpoints: APIEndpoint[]) => {
+    try {
+      const response = await axios.post('/api/workflows/suggest-flows', {
+        endpoints,
+        specId,
+      });
+      
+      if (response.data.success && response.data.data) {
+        setSuggestedFlows(response.data.data.suggestedFlows);
+      }
+    } catch (err) {
+      console.error('Failed to fetch suggested flows:', err);
     }
   };
 
@@ -89,6 +128,25 @@ const OpenAPIWorkspace: React.FC = () => {
     };
     setSelectedWorkflow(fullWorkflow);
     setShowNLFlowBuilder(false);
+    
+    // Mark that first flow has been configured
+    if (!hasConfiguredFirstFlow) {
+      setHasConfiguredFirstFlow(true);
+    }
+  };
+
+  const handleAutoBuildFlows = () => {
+    if (!selectedWorkflow) {
+      alert('Please configure at least one workflow first');
+      return;
+    }
+    setShowPatternLearner(true);
+  };
+
+  const handleFlowsGenerated = (workflows: GeneratedWorkflow[]) => {
+    console.log('Auto-generated workflows:', workflows);
+    // Here you would save the generated workflows
+    setShowPatternLearner(false);
   };
 
   return (
@@ -122,6 +180,20 @@ const OpenAPIWorkspace: React.FC = () => {
                 <Wand2 className="h-7 w-7 text-white mb-3 group-hover:rotate-12 transition-transform duration-300" />
                 <h3 className="text-white font-semibold text-sm mb-1">Natural Language</h3>
                 <p className="text-xs text-purple-100 leading-relaxed">Describe your flow in plain English</p>
+              </div>
+            </button>
+          )}
+
+          {hasConfiguredFirstFlow && suggestedFlows.length > 0 && (
+            <button
+              onClick={handleAutoBuildFlows}
+              className="group relative bg-gradient-to-br from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-xl p-5 text-left transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 transform border border-green-400/50 overflow-hidden animate-fade-in"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <Zap className="h-7 w-7 text-white mb-3 group-hover:scale-110 transition-transform duration-300" />
+                <h3 className="text-white font-semibold text-sm mb-1">Auto-Build All</h3>
+                <p className="text-xs text-green-100 leading-relaxed">Generate remaining flows</p>
               </div>
             </button>
           )}
@@ -299,6 +371,17 @@ const OpenAPIWorkspace: React.FC = () => {
           endpoints={availableEndpoints}
           onWorkflowGenerated={handleNLWorkflowGenerated}
           onClose={() => setShowNLFlowBuilder(false)}
+        />
+      )}
+
+      {showPatternLearner && selectedWorkflow && suggestedFlows.length > 0 && (
+        <FlowPatternLearner
+          specId={currentSpecId!}
+          endpoints={availableEndpoints}
+          referenceWorkflow={selectedWorkflow}
+          suggestedFlows={suggestedFlows}
+          onFlowsGenerated={handleFlowsGenerated}
+          onClose={() => setShowPatternLearner(false)}
         />
       )}
     </div>

@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, Wand2, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Sparkles, Wand2, CheckCircle, AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import { APIEndpoint, APIWorkflow } from '@/lib/types/openapi';
+import SuggestedFlowsViewer from './SuggestedFlowsViewer';
 
 interface NaturalLanguageFlowBuilderProps {
   specId: string;
@@ -17,12 +18,23 @@ interface AIReasoningItem {
   reasoning: string;
 }
 
+interface SuggestedFlow {
+  id: string;
+  name: string;
+  description: string;
+  useCase: string;
+  endpoints: string[];
+  category: string;
+  complexity: "simple" | "moderate" | "complex";
+}
+
 const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
   specId,
   endpoints,
   onWorkflowGenerated,
   onClose,
 }) => {
+  const [viewMode, setViewMode] = useState<'suggestions' | 'custom'>('suggestions');
   const [description, setDescription] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,9 +43,12 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
     explanation: string;
     aiReasoning: AIReasoningItem[];
   } | null>(null);
+  const [selectedSuggestedFlow, setSelectedSuggestedFlow] = useState<SuggestedFlow | null>(null);
 
-  const handleGenerate = async () => {
-    if (!description.trim()) {
+  const handleGenerate = async (customDescription?: string) => {
+    const flowDescription = customDescription || description;
+    
+    if (!flowDescription.trim()) {
       setError('Please enter a description of your desired flow');
       return;
     }
@@ -44,7 +59,7 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
 
     try {
       const response = await axios.post('/api/workflows/generate-from-nl', {
-        description,
+        description: flowDescription,
         endpoints,
         specId,
       });
@@ -59,6 +74,13 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleSuggestedFlowSelected = (flow: SuggestedFlow) => {
+    setSelectedSuggestedFlow(flow);
+    // Generate workflow from the selected suggested flow
+    const flowDescription = `${flow.description}. ${flow.useCase}`;
+    handleGenerate(flowDescription);
   };
 
   const handleUseWorkflow = () => {
@@ -105,53 +127,78 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
-            {/* Input Section */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-300 mb-3">
-                Describe Your Desired Flow or Outcome
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Example: I want to create a new user, send them a welcome email, and add them to the newsletter list"
-                rows={6}
-                className="w-full bg-gray-900/80 text-white rounded-xl px-5 py-4 outline-none border border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 resize-none transition-all duration-300 placeholder-gray-500"
-                disabled={isGenerating}
+          {viewMode === 'suggestions' && !generatedWorkflow && (
+            <div className="space-y-6">
+              <SuggestedFlowsViewer
+                specId={specId}
+                endpoints={endpoints}
+                onFlowSelected={handleSuggestedFlowSelected}
+                onUseCustomFlow={() => setViewMode('custom')}
+                autoLoad={true}
               />
             </div>
+          )}
 
-            {/* Example Prompts */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-400" />
-                Example Prompts:
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {examplePrompts.map((prompt, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setDescription(prompt)}
-                    className="text-left bg-gray-900/80 hover:bg-gray-800 text-gray-300 text-sm rounded-xl px-4 py-3 border border-gray-600 hover:border-purple-500 transition-all duration-300 group transform hover:scale-105 shadow-lg hover:shadow-purple-500/20"
-                    disabled={isGenerating}
-                  >
-                    <Sparkles className="inline h-4 w-4 mr-2 text-purple-400 group-hover:animate-pulse" />
-                    {prompt}
-                  </button>
-                ))}
+          {viewMode === 'custom' && !generatedWorkflow && (
+            <div className="space-y-6">
+              {/* Back button */}
+              <button
+                onClick={() => setViewMode('suggestions')}
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition-all duration-300"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Suggested Flows
+              </button>
+
+              {/* Input Section */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-300 mb-3">
+                  Describe Your Desired Flow or Outcome
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Example: I want to create a new user, send them a welcome email, and add them to the newsletter list"
+                  rows={6}
+                  className="w-full bg-gray-900/80 text-white rounded-xl px-5 py-4 outline-none border border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 resize-none transition-all duration-300 placeholder-gray-500"
+                  disabled={isGenerating}
+                />
+              </div>
+
+              {/* Example Prompts */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-purple-400" />
+                  Example Prompts:
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {examplePrompts.map((prompt, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setDescription(prompt)}
+                      className="text-left bg-gray-900/80 hover:bg-gray-800 text-gray-300 text-sm rounded-xl px-4 py-3 border border-gray-600 hover:border-purple-500 transition-all duration-300 group transform hover:scale-105 shadow-lg hover:shadow-purple-500/20"
+                      disabled={isGenerating}
+                    >
+                      <Sparkles className="inline h-4 w-4 mr-2 text-purple-400 group-hover:animate-pulse" />
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
+          )}
 
-            {/* Error Display */}
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-5 py-4 rounded-xl flex items-center gap-3 animate-fade-in backdrop-blur-sm">
-                <AlertCircle className="h-6 w-6 flex-shrink-0 animate-pulse" />
-                <span className="font-medium">{error}</span>
-              </div>
-            )}
+          {generatedWorkflow && (
+            <div className="space-y-6">
+              {/* Error Display */}
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-5 py-4 rounded-xl flex items-center gap-3 animate-fade-in backdrop-blur-sm">
+                  <AlertCircle className="h-6 w-6 flex-shrink-0 animate-pulse" />
+                  <span className="font-medium">{error}</span>
+                </div>
+              )}
 
-            {/* Generated Workflow Display */}
-            {generatedWorkflow && (
+              {/* Generated Workflow Display */}
               <div className="space-y-4 animate-fade-in">
                 <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-sm shadow-lg">
                   <CheckCircle className="h-6 w-6 flex-shrink-0 animate-pulse" />
@@ -225,8 +272,16 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
                   </p>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Error Display for custom mode */}
+          {viewMode === 'custom' && error && !generatedWorkflow && (
+            <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-5 py-4 rounded-xl flex items-center gap-3 animate-fade-in backdrop-blur-sm">
+              <AlertCircle className="h-6 w-6 flex-shrink-0 animate-pulse" />
+              <span className="font-medium">{error}</span>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -247,9 +302,9 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
                 <CheckCircle className="h-5 w-5" />
                 Use This Workflow
               </button>
-            ) : (
+            ) : viewMode === 'custom' && (
               <button
-                onClick={handleGenerate}
+                onClick={() => handleGenerate()}
                 disabled={isGenerating || !description.trim()}
                 className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-8 py-3 rounded-xl flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
               >
