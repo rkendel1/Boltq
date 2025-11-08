@@ -25,7 +25,7 @@ setup(
     ],
     python_requires=">=3.8",
     install_requires=[
-        "fastapi>=0.100.0",
+        "fastapi>=0.110.0",
         "uvicorn>=0.23.0",
         "openai>=1.0.0",
         "pydantic>=2.0.0",
