@@ -92,16 +92,22 @@ const OpenAPIWorkspace: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-6 overflow-y-auto">
+    <div className="h-full p-6 overflow-y-auto bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            OpenAPI Workflow Builder 🚀
-          </h1>
-          <p className="text-blue-100">
-            Upload your OpenAPI specifications and create conversational workflows in seconds
-          </p>
+        <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-xl p-8 shadow-2xl overflow-hidden">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative z-10">
+            <h1 className="text-4xl font-bold text-white mb-3 animate-fade-in">
+              OpenAPI Workflow Builder 🚀
+            </h1>
+            <p className="text-blue-100 text-lg">
+              Transform your API specifications into powerful conversational workflows in seconds
+            </p>
+          </div>
+          {/* Decorative elements */}
+          <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute -left-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
         </div>
 
         {/* Action Buttons */}
@@ -109,50 +115,65 @@ const OpenAPIWorkspace: React.FC = () => {
           {currentSpecId && availableEndpoints.length > 0 && (
             <button
               onClick={() => setShowNLFlowBuilder(true)}
-              className="bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border border-purple-500 rounded-lg p-4 text-left transition-all shadow-lg"
+              className="group relative bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl p-5 text-left transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 transform border border-purple-400/50 overflow-hidden"
             >
-              <Wand2 className="h-6 w-6 text-white mb-2" />
-              <h3 className="text-white font-medium text-sm">Natural Language</h3>
-              <p className="text-xs text-purple-100 mt-1">Describe your flow in plain English</p>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <Wand2 className="h-7 w-7 text-white mb-3 group-hover:rotate-12 transition-transform duration-300" />
+                <h3 className="text-white font-semibold text-sm mb-1">Natural Language</h3>
+                <p className="text-xs text-purple-100 leading-relaxed">Describe your flow in plain English</p>
+              </div>
             </button>
           )}
           
           <button
             onClick={() => setShowTemplatesLibrary(true)}
-            className="bg-[#272727] hover:bg-[#323232] border border-gray-600 hover:border-blue-500 rounded-lg p-4 text-left transition-all"
+            className="group relative bg-gradient-to-br from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 border border-gray-600 hover:border-blue-400 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-xl hover:scale-105 transform overflow-hidden"
           >
-            <FileText className="h-6 w-6 text-blue-500 mb-2" />
-            <h3 className="text-white font-medium text-sm">Templates</h3>
-            <p className="text-xs text-gray-400 mt-1">Pre-built workflows</p>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative z-10">
+              <FileText className="h-7 w-7 text-blue-400 mb-3 group-hover:scale-110 transition-transform duration-300" />
+              <h3 className="text-white font-semibold text-sm mb-1">Templates</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">Pre-built workflows</p>
+            </div>
           </button>
 
           <button
             onClick={() => setShowDynamicFlowGenerator(true)}
-            className="bg-[#272727] hover:bg-[#323232] border border-gray-600 hover:border-purple-500 rounded-lg p-4 text-left transition-all"
+            className="group relative bg-gradient-to-br from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 border border-gray-600 hover:border-purple-400 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-xl hover:scale-105 transform overflow-hidden"
           >
-            <Sparkles className="h-6 w-6 text-purple-500 mb-2" />
-            <h3 className="text-white font-medium text-sm">Dynamic Flow</h3>
-            <p className="text-xs text-gray-400 mt-1">AI-powered generation</p>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative z-10">
+              <Sparkles className="h-7 w-7 text-purple-400 mb-3 group-hover:rotate-180 transition-transform duration-500" />
+              <h3 className="text-white font-semibold text-sm mb-1">Dynamic Flow</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">AI-powered generation</p>
+            </div>
           </button>
 
           {selectedWorkflow && (
             <>
               <button
                 onClick={() => setShowParameterMapping(true)}
-                className="bg-[#272727] hover:bg-[#323232] border border-gray-600 hover:border-green-500 rounded-lg p-4 text-left transition-all"
+                className="group relative bg-gradient-to-br from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 border border-gray-600 hover:border-green-400 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-xl hover:scale-105 transform overflow-hidden animate-fade-in"
               >
-                <GitBranch className="h-6 w-6 text-green-500 mb-2" />
-                <h3 className="text-white font-medium text-sm">Parameter Map</h3>
-                <p className="text-xs text-gray-400 mt-1">Connect parameters</p>
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative z-10">
+                  <GitBranch className="h-7 w-7 text-green-400 mb-3 group-hover:scale-110 transition-transform duration-300" />
+                  <h3 className="text-white font-semibold text-sm mb-1">Parameter Map</h3>
+                  <p className="text-xs text-gray-400 leading-relaxed">Connect parameters</p>
+                </div>
               </button>
 
               <button
                 onClick={() => setShowExecutionUI(true)}
-                className="bg-[#272727] hover:bg-[#323232] border border-gray-600 hover:border-orange-500 rounded-lg p-4 text-left transition-all"
+                className="group relative bg-gradient-to-br from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 border border-gray-600 hover:border-orange-400 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-xl hover:scale-105 transform overflow-hidden animate-fade-in"
               >
-                <Play className="h-6 w-6 text-orange-500 mb-2" />
-                <h3 className="text-white font-medium text-sm">Execute</h3>
-                <p className="text-xs text-gray-400 mt-1">Run workflow</p>
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/0 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative z-10">
+                  <Play className="h-7 w-7 text-orange-400 mb-3 group-hover:translate-x-1 transition-transform duration-300" />
+                  <h3 className="text-white font-semibold text-sm mb-1">Execute</h3>
+                  <p className="text-xs text-gray-400 leading-relaxed">Run workflow</p>
+                </div>
               </button>
             </>
           )}
@@ -182,53 +203,55 @@ const OpenAPIWorkspace: React.FC = () => {
 
         {/* Getting Started Guide */}
         {!currentSpecId && (
-          <div className="bg-[#181818] rounded-lg p-6 border border-gray-700">
-            <h2 className="text-xl font-semibold text-white mb-4">Getting Started</h2>
-            <div className="space-y-3 text-gray-300">
-              <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-gray-700 shadow-xl animate-fade-in">
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+              <span className="text-3xl">✨</span> Getting Started
+            </h2>
+            <div className="space-y-4 text-gray-300">
+              <div className="flex items-start gap-4 group">
+                <span className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
                   1
                 </span>
                 <div>
-                  <h3 className="font-medium text-white">Upload Your OpenAPI Specification</h3>
-                  <p className="text-sm text-gray-400">
-                    Provide a URL to your OpenAPI/Swagger spec or upload a JSON/YAML file
+                  <h3 className="font-semibold text-white text-lg mb-1">Upload Your OpenAPI Specification</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Provide a URL to your OpenAPI/Swagger spec or upload a JSON/YAML file. We&apos;ll parse it instantly.
                   </p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+              <div className="flex items-start gap-4 group">
+                <span className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
                   2
                 </span>
                 <div>
-                  <h3 className="font-medium text-white">Browse Available Endpoints</h3>
-                  <p className="text-sm text-gray-400">
-                    View all available API endpoints with their methods, paths, and descriptions
+                  <h3 className="font-semibold text-white text-lg mb-1">Browse Available Endpoints</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    View all available API endpoints with their methods, paths, and detailed descriptions
                   </p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+              <div className="flex items-start gap-4 group">
+                <span className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-pink-500 to-pink-600 text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
                   3
                 </span>
                 <div>
-                  <h3 className="font-medium text-white">Create Conversational Workflows</h3>
-                  <p className="text-sm text-gray-400">
-                    Select endpoints and build workflows that can be triggered through natural language
+                  <h3 className="font-semibold text-white text-lg mb-1">Create Conversational Workflows</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Use natural language or templates to build workflows that can be triggered through conversations
                   </p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+              <div className="flex items-start gap-4 group">
+                <span className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
                   4
                 </span>
                 <div>
-                  <h3 className="font-medium text-white">Integrate with Your Workspace</h3>
-                  <p className="text-sm text-gray-400">
-                    Use your workflows in the conversational interface to automate API interactions
+                  <h3 className="font-semibold text-white text-lg mb-1">Integrate with Your Workspace</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Deploy your workflows in the conversational interface to automate API interactions seamlessly
                   </p>
                 </div>
               </div>

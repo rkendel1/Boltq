@@ -55,10 +55,13 @@ const APIEndpointsViewer: React.FC<APIEndpointsViewerProps> = ({ specId }) => {
 
   if (loading) {
     return (
-      <div className="bg-[#181818] rounded-lg p-6 border border-gray-700">
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          <span className="ml-3 text-gray-400">Loading endpoints...</span>
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-gray-700 shadow-xl animate-fade-in">
+        <div className="flex items-center justify-center py-12">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-blue-500"></div>
+            <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-xl"></div>
+          </div>
+          <span className="ml-4 text-gray-300 font-medium">Loading endpoints...</span>
         </div>
       </div>
     );
@@ -66,70 +69,73 @@ const APIEndpointsViewer: React.FC<APIEndpointsViewerProps> = ({ specId }) => {
 
   if (error) {
     return (
-      <div className="bg-[#181818] rounded-lg p-6 border border-gray-700">
-        <div className="bg-red-500/10 border border-red-500 text-red-400 px-4 py-2 rounded-lg">
-          {error}
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-gray-700 shadow-xl animate-fade-in">
+        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-sm">
+          <div className="flex-shrink-0 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+          <span className="font-medium">{error}</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#181818] rounded-lg p-6 border border-gray-700">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-          <Database className="h-5 w-5" />
+    <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-gray-700 shadow-xl animate-fade-in">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+          <Database className="h-6 w-6 text-blue-400" />
           Available API Endpoints
         </h2>
         {selectedEndpoints.size > 0 && (
           <button
             onClick={handleCreateWorkflow}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-5 w-5" />
             Create Workflow ({selectedEndpoints.size})
           </button>
         )}
       </div>
 
-      <div className="space-y-3 max-h-[500px] overflow-y-auto">
+      <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
         {endpoints.map((endpoint) => (
           <div
             key={endpoint.id}
-            className={`bg-[#272727] rounded-lg p-4 border cursor-pointer transition-all ${
+            className={`bg-gray-900/80 rounded-xl p-5 border cursor-pointer transition-all duration-300 group ${
               selectedEndpoints.has(endpoint.id)
-                ? 'border-blue-500 bg-blue-500/10'
-                : 'border-gray-600 hover:border-gray-500'
+                ? 'border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/20'
+                : 'border-gray-700 hover:border-gray-600 hover:shadow-lg'
             }`}
             onClick={() => toggleEndpointSelection(endpoint.id)}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-3 mb-3">
                   <span
-                    className={`text-xs font-mono px-2 py-1 rounded ${
+                    className={`text-xs font-mono px-3 py-1.5 rounded-full font-bold shadow-lg ${
                       endpoint.method === 'GET'
-                        ? 'bg-green-500/20 text-green-400'
+                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                         : endpoint.method === 'POST'
-                        ? 'bg-blue-500/20 text-blue-400'
+                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                         : endpoint.method === 'PUT'
-                        ? 'bg-yellow-500/20 text-yellow-400'
+                        ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                         : endpoint.method === 'DELETE'
-                        ? 'bg-red-500/20 text-red-400'
-                        : 'bg-gray-500/20 text-gray-400'
+                        ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                        : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                     }`}
                   >
                     {endpoint.method}
                   </span>
-                  <span className="text-gray-400 font-mono text-sm">{endpoint.path}</span>
+                  <span className="text-gray-400 font-mono text-sm group-hover:text-gray-300 transition-colors">
+                    {endpoint.path}
+                  </span>
                 </div>
                 
                 {endpoint.summary && (
-                  <p className="text-sm text-gray-300 mb-1">{endpoint.summary}</p>
+                  <p className="text-sm text-gray-300 mb-2 font-medium">{endpoint.summary}</p>
                 )}
                 
                 {endpoint.description && (
-                  <p className="text-xs text-gray-500">{endpoint.description}</p>
+                  <p className="text-xs text-gray-500 leading-relaxed">{endpoint.description}</p>
                 )}
               </div>
 
@@ -137,7 +143,7 @@ const APIEndpointsViewer: React.FC<APIEndpointsViewerProps> = ({ specId }) => {
                 type="checkbox"
                 checked={selectedEndpoints.has(endpoint.id)}
                 onChange={() => toggleEndpointSelection(endpoint.id)}
-                className="mt-1 h-5 w-5 text-blue-500 rounded focus:ring-2 focus:ring-blue-500"
+                className="mt-1 h-5 w-5 text-blue-500 rounded-lg focus:ring-2 focus:ring-blue-500 cursor-pointer transition-all duration-300"
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
@@ -145,8 +151,9 @@ const APIEndpointsViewer: React.FC<APIEndpointsViewerProps> = ({ specId }) => {
         ))}
 
         {endpoints.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
-            No endpoints found in this API specification
+          <div className="text-center py-12 text-gray-400">
+            <Database className="h-12 w-12 mx-auto mb-3 opacity-50" />
+            <p className="font-medium">No endpoints found in this API specification</p>
           </div>
         )}
       </div>
