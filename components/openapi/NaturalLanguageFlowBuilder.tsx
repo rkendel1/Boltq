@@ -79,25 +79,28 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#181818] rounded-lg border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-slide-in-right">
         {/* Header */}
-        <div className="p-6 border-b border-gray-700 bg-gradient-to-r from-purple-600/20 to-blue-600/20">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-              <Wand2 className="h-6 w-6 text-purple-500" />
-              Natural Language Flow Builder
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white text-2xl leading-none"
-            >
-              ✕
-            </button>
+        <div className="p-8 border-b border-gray-700 bg-gradient-to-r from-purple-600/30 via-blue-600/30 to-pink-600/30 relative overflow-hidden">
+          <div className="absolute inset-0 shimmer-effect"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+                <Wand2 className="h-8 w-8 text-purple-400 animate-pulse" />
+                Natural Language Flow Builder
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-white text-3xl leading-none transition-all duration-300 hover:rotate-90 transform"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-sm text-gray-300 mt-3 leading-relaxed">
+              Describe what you want to achieve in plain English, and AI will create the perfect workflow ✨
+            </p>
           </div>
-          <p className="text-sm text-gray-300 mt-2">
-            Describe what you want to achieve in plain English, and AI will create the perfect workflow
-          </p>
         </div>
 
         {/* Content */}
@@ -105,7 +108,7 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
           <div className="space-y-6">
             {/* Input Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-gray-300 mb-3">
                 Describe Your Desired Flow or Outcome
               </label>
               <textarea
@@ -113,23 +116,26 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Example: I want to create a new user, send them a welcome email, and add them to the newsletter list"
                 rows={6}
-                className="w-full bg-[#272727] text-white rounded-lg px-4 py-3 outline-none border border-gray-600 focus:border-purple-500 resize-none"
+                className="w-full bg-gray-900/80 text-white rounded-xl px-5 py-4 outline-none border border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 resize-none transition-all duration-300 placeholder-gray-500"
                 disabled={isGenerating}
               />
             </div>
 
             {/* Example Prompts */}
             <div>
-              <h3 className="text-sm font-medium text-gray-300 mb-2">Example Prompts:</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-purple-400" />
+                Example Prompts:
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {examplePrompts.map((prompt, index) => (
                   <button
                     key={index}
                     onClick={() => setDescription(prompt)}
-                    className="text-left bg-[#272727] hover:bg-[#323232] text-gray-300 text-sm rounded-lg px-3 py-2 border border-gray-600 hover:border-purple-500 transition-all"
+                    className="text-left bg-gray-900/80 hover:bg-gray-800 text-gray-300 text-sm rounded-xl px-4 py-3 border border-gray-600 hover:border-purple-500 transition-all duration-300 group transform hover:scale-105 shadow-lg hover:shadow-purple-500/20"
                     disabled={isGenerating}
                   >
-                    <Sparkles className="inline h-3 w-3 mr-1 text-purple-400" />
+                    <Sparkles className="inline h-4 w-4 mr-2 text-purple-400 group-hover:animate-pulse" />
                     {prompt}
                   </button>
                 ))}
@@ -138,62 +144,65 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
 
             {/* Error Display */}
             {error && (
-              <div className="bg-red-500/10 border border-red-500 text-red-400 px-4 py-3 rounded-lg flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                <span>{error}</span>
+              <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-5 py-4 rounded-xl flex items-center gap-3 animate-fade-in backdrop-blur-sm">
+                <AlertCircle className="h-6 w-6 flex-shrink-0 animate-pulse" />
+                <span className="font-medium">{error}</span>
               </div>
             )}
 
             {/* Generated Workflow Display */}
             {generatedWorkflow && (
-              <div className="space-y-4">
-                <div className="bg-green-500/10 border border-green-500 text-green-400 px-4 py-3 rounded-lg flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 flex-shrink-0" />
-                  <span>Workflow generated successfully!</span>
+              <div className="space-y-4 animate-fade-in">
+                <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-sm shadow-lg">
+                  <CheckCircle className="h-6 w-6 flex-shrink-0 animate-pulse" />
+                  <span className="font-semibold">Workflow generated successfully!</span>
                 </div>
 
                 {/* Workflow Details */}
-                <div className="bg-[#272727] rounded-lg p-4 border border-gray-600">
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                <div className="bg-gray-900/80 rounded-xl p-6 border border-gray-600 shadow-xl">
+                  <h3 className="text-xl font-bold text-white mb-3">
                     {generatedWorkflow.workflow.name}
                   </h3>
-                  <p className="text-sm text-gray-300 mb-4">
+                  <p className="text-sm text-gray-300 mb-6 leading-relaxed">
                     {generatedWorkflow.workflow.description}
                   </p>
 
-                  <div className="border-t border-gray-600 pt-4">
-                    <h4 className="text-sm font-medium text-gray-300 mb-3">Workflow Steps:</h4>
-                    <div className="space-y-2">
+                  <div className="border-t border-gray-700 pt-6">
+                    <h4 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
+                      <div className="w-1 h-5 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full"></div>
+                      Workflow Steps:
+                    </h4>
+                    <div className="space-y-3">
                       {generatedWorkflow.workflow.steps?.map((step, index) => {
                         const endpoint = endpoints.find(ep => ep.id === step.endpointId);
                         const reasoning = generatedWorkflow.aiReasoning.find(r => r.endpointId === step.endpointId);
                         
                         return (
-                          <div key={step.id} className="bg-[#181818] rounded-lg p-3 border border-gray-700">
-                            <div className="flex items-start gap-3">
-                              <div className="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                          <div key={step.id} className="bg-gray-800/80 rounded-xl p-5 border border-gray-700 hover:border-purple-500/50 transition-all duration-300 group shadow-lg">
+                            <div className="flex items-start gap-4">
+                              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
                                 {index + 1}
                               </div>
                               <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className={`text-xs font-mono px-2 py-1 rounded ${
-                                    endpoint?.method === 'GET' ? 'bg-green-500/20 text-green-400' :
-                                    endpoint?.method === 'POST' ? 'bg-blue-500/20 text-blue-400' :
-                                    endpoint?.method === 'PUT' ? 'bg-yellow-500/20 text-yellow-400' :
-                                    endpoint?.method === 'DELETE' ? 'bg-red-500/20 text-red-400' :
-                                    'bg-gray-500/20 text-gray-400'
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className={`text-xs font-mono px-3 py-1 rounded-full font-semibold ${
+                                    endpoint?.method === 'GET' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                                    endpoint?.method === 'POST' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                                    endpoint?.method === 'PUT' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                                    endpoint?.method === 'DELETE' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                                    'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                                   }`}>
                                     {endpoint?.method}
                                   </span>
                                   <span className="text-gray-400 font-mono text-sm">{endpoint?.path}</span>
                                 </div>
                                 {endpoint?.summary && (
-                                  <p className="text-sm text-gray-300 mb-1">{endpoint.summary}</p>
+                                  <p className="text-sm text-gray-300 mb-2">{endpoint.summary}</p>
                                 )}
                                 {reasoning && (
-                                  <p className="text-xs text-purple-400 mt-2">
+                                  <p className="text-xs text-purple-400 mt-3 bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
                                     <Sparkles className="inline h-3 w-3 mr-1" />
-                                    AI Reasoning: {reasoning.reasoning}
+                                    <strong>AI Reasoning:</strong> {reasoning.reasoning}
                                   </p>
                                 )}
                               </div>
@@ -206,12 +215,12 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
                 </div>
 
                 {/* AI Explanation */}
-                <div className="bg-[#272727] rounded-lg p-4 border border-gray-600">
-                  <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-purple-400" />
+                <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-xl p-6 border border-purple-500/30 shadow-xl backdrop-blur-sm">
+                  <h4 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-purple-400 animate-pulse" />
                     AI Explanation
                   </h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">
+                  <p className="text-sm text-gray-300 leading-relaxed">
                     {generatedWorkflow.explanation}
                   </p>
                 </div>
@@ -221,11 +230,11 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-700 bg-[#202020]">
-          <div className="flex justify-end gap-3">
+        <div className="p-8 border-t border-gray-700 bg-gray-900/50 backdrop-blur-sm">
+          <div className="flex justify-end gap-4">
             <button
               onClick={onClose}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg"
+              className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
               disabled={isGenerating}
             >
               Cancel
@@ -233,25 +242,25 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
             {generatedWorkflow ? (
               <button
                 onClick={handleUseWorkflow}
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2"
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-3 rounded-xl flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
-                <CheckCircle className="h-4 w-4" />
+                <CheckCircle className="h-5 w-5" />
                 Use This Workflow
               </button>
             ) : (
               <button
                 onClick={handleGenerate}
                 disabled={isGenerating || !description.trim()}
-                className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg flex items-center gap-2"
+                className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-8 py-3 rounded-xl flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
               >
                 {isGenerating ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                     Generating...
                   </>
                 ) : (
                   <>
-                    <Wand2 className="h-4 w-4" />
+                    <Wand2 className="h-5 w-5" />
                     Generate Workflow
                   </>
                 )}
