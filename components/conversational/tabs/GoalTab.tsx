@@ -60,12 +60,16 @@ const GoalTab: React.FC<GoalTabProps> = ({ conversationContext, onUpdateContext,
       goalConfirmed: true,
       snapshots: {
         ...prev.snapshots,
-        goal: {
+        goal: prev.snapshots.goal ? {
           ...prev.snapshots.goal,
           data: {
-            ...(prev.snapshots.goal?.data || {}),
+            ...prev.snapshots.goal.data,
             confirmed: true
           }
+        } : {
+          tabId: 'goal' as const,
+          data: { confirmed: true },
+          timestamp: Date.now()
         }
       }
     }));

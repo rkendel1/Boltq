@@ -2,13 +2,17 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Loader2 } from 'lucide-react';
-import { TabType, ChatMessage, ConversationContext } from '@/lib/types/conversational';
+import { TabType, ChatMessage, ConversationContext, TabSnapshot } from '@/lib/types/conversational';
 import SpecTab from './tabs/SpecTab';
 import GoalTab from './tabs/GoalTab';
 import TestTab from './tabs/TestTab';
 import ComponentTab from './tabs/ComponentTab';
 import EditTab from './tabs/EditTab';
-import { v4 as uuidv4 } from 'uuid4';
+
+// Simple UUID generator
+const generateId = () => {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+};
 
 interface ConversationalWorkspaceProps {
   userId?: string;
@@ -18,7 +22,7 @@ const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = ({ userI
   const [activeTab, setActiveTab] = useState<TabType>('spec');
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: uuidv4(),
+      id: generateId(),
       role: 'system',
       content: 'Welcome! I\'m here to help you transform API specifications into working UI components. Let\'s start by uploading or selecting an API spec.',
       timestamp: Date.now(),
@@ -28,12 +32,12 @@ const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = ({ userI
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationContext, setConversationContext] = useState<ConversationContext>({
-    conversationId: uuidv4(),
+    conversationId: generateId(),
     activeTab: 'spec',
     goalConfirmed: false,
     testsPassed: false,
     componentGenerated: false,
-    snapshots: {} as Record<TabType, any>,
+    snapshots: {} as Partial<Record<TabType, TabSnapshot>>,
   });
 
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -56,7 +60,7 @@ const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = ({ userI
     if (!inputValue.trim() || isLoading) return;
 
     const userMessage: ChatMessage = {
-      id: uuidv4(),
+      id: generateId(),
       role: 'user',
       content: inputValue,
       timestamp: Date.now(),
@@ -84,7 +88,7 @@ const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = ({ userI
       const data = await response.json();
 
       const aiMessage: ChatMessage = {
-        id: uuidv4(),
+        id: generateId(),
         role: 'ai',
         content: data.response || 'I\'m processing your request...',
         timestamp: Date.now(),
@@ -107,7 +111,7 @@ const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = ({ userI
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage: ChatMessage = {
-        id: uuidv4(),
+        id: generateId(),
         role: 'ai',
         content: 'Sorry, I encountered an error processing your request. Please try again.',
         timestamp: Date.now(),
@@ -140,7 +144,7 @@ const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = ({ userI
       onUpdateContext: setConversationContext,
       onMessage: (content: string) => {
         setMessages(prev => [...prev, {
-          id: uuidv4(),
+          id: generateId(),
           role: 'system',
           content,
           timestamp: Date.now(),

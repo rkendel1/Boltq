@@ -86,7 +86,7 @@ export interface ConversationContext {
   goalConfirmed: boolean;
   testsPassed: boolean;
   componentGenerated: boolean;
-  snapshots: Record<TabType, TabSnapshot>;
+  snapshots: Partial<Record<TabType, TabSnapshot>>;
 }
 
 export interface AIAction {

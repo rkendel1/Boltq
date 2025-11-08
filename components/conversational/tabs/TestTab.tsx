@@ -192,14 +192,14 @@ const TestTab: React.FC<TestTabProps> = ({ conversationContext, onUpdateContext,
                           )}
                         </div>
                         
-                        {result.status === 'success' && result.responseData && (
+                        {result.status === 'success' && result.responseData ? (
                           <div className="mt-2 bg-gray-900 rounded p-3">
                             <p className="text-xs text-gray-400 mb-1">Response:</p>
                             <pre className="text-xs text-green-400 overflow-auto max-h-32">
                               {JSON.stringify(result.responseData, null, 2)}
                             </pre>
                           </div>
-                        )}
+                        ) : null}
                         
                         {result.status === 'failure' && result.errorMessage && (
                           <div className="mt-2">
