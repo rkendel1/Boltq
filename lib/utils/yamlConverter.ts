@@ -83,7 +83,7 @@ export function yamlToJson(yamlContent: string): ConversionResult {
 
       const [, , key, value] = match;
       const cleanKey = key.trim();
-      let cleanValue: unknown = value.trim();
+      let cleanValue: string | number | boolean | Record<string, unknown> = value.trim();
 
       // Parse value types
       if (cleanValue === '') {
@@ -92,11 +92,11 @@ export function yamlToJson(yamlContent: string): ConversionResult {
         cleanValue = true;
       } else if (cleanValue === 'false') {
         cleanValue = false;
-      } else if (/^\d+$/.test(cleanValue)) {
+      } else if (typeof cleanValue === 'string' && /^\d+$/.test(cleanValue)) {
         cleanValue = parseInt(cleanValue, 10);
-      } else if (/^\d+\.\d+$/.test(cleanValue)) {
+      } else if (typeof cleanValue === 'string' && /^\d+\.\d+$/.test(cleanValue)) {
         cleanValue = parseFloat(cleanValue);
-      } else if (cleanValue.startsWith('"') || cleanValue.startsWith("'")) {
+      } else if (typeof cleanValue === 'string' && (cleanValue.startsWith('"') || cleanValue.startsWith("'"))) {
         cleanValue = cleanValue.slice(1, -1);
       }
 

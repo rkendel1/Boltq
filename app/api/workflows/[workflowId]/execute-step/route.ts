@@ -6,11 +6,11 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { workflowId: string } }
+  context: { params: Promise<{ workflowId: string }> }
 ) {
   try {
     const { stepId, parameters } = await req.json();
-    const { workflowId } = params;
+    const { workflowId } = await context.params;
 
     // Here you would execute the actual API endpoint
     // For now, we'll simulate the execution

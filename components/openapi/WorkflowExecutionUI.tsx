@@ -254,26 +254,26 @@ const WorkflowExecutionUI: React.FC<WorkflowExecutionUIProps> = ({ workflow, onC
                 </div>
 
                 {/* Expanded Step Details */}
-                {expandedSteps.has(step.stepId) && (
+                {expandedSteps.has(step.stepId) ? (
                   <div className="px-4 pb-4 border-t border-gray-600">
-                    {step.result && (
+                    {step.result ? (
                       <div className="mt-3">
                         <h5 className="text-sm font-medium text-gray-300 mb-2">Result:</h5>
                         <pre className="bg-[#181818] p-3 rounded text-xs text-green-400 overflow-x-auto">
                           {JSON.stringify(step.result, null, 2)}
                         </pre>
                       </div>
-                    )}
-                    {step.error && (
+                    ) : null}
+                    {step.error ? (
                       <div className="mt-3">
                         <h5 className="text-sm font-medium text-red-400 mb-2">Error:</h5>
                         <div className="bg-red-500/10 p-3 rounded text-sm text-red-400">
                           {step.error}
                         </div>
                       </div>
-                    )}
+                    ) : null}
                   </div>
-                )}
+                ) : null}
               </div>
             ))}
           </div>
