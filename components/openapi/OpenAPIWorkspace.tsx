@@ -215,7 +215,7 @@ const OpenAPIWorkspace: React.FC = () => {
                 <div>
                   <h3 className="font-semibold text-white text-lg mb-1">Upload Your OpenAPI Specification</h3>
                   <p className="text-sm text-gray-400 leading-relaxed">
-                    Provide a URL to your OpenAPI/Swagger spec or upload a JSON/YAML file. We'll parse it instantly.
+                    Provide a URL to your OpenAPI/Swagger spec or upload a JSON/YAML file. We&apos;ll parse it instantly.
                   </p>
                 </div>
               </div>
