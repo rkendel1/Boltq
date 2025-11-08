@@ -210,6 +210,89 @@ class BackendService {
   }
 
   /**
+   * Suggest workflows based on API analysis
+   */
+  async suggestWorkflows(
+    specId: string,
+    endpoints: APIEndpoint[]
+  ): Promise<BackendResponse<{
+    suggestedFlows: Array<{
+      id: string;
+      name: string;
+      description: string;
+      useCase: string;
+      endpoints: string[];
+      category: string;
+      complexity: string;
+    }>;
+    apiSummary: string;
+    specId: string;
+  }>> {
+    try {
+      const response = await this.client.post('/api/workflows/suggest-flows', {
+        endpoints,
+        specId,
+      });
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Learn workflow patterns from a reference workflow
+   */
+  async learnWorkflowPattern(
+    workflow: Record<string, unknown>,
+    endpoints: APIEndpoint[]
+  ): Promise<BackendResponse<{
+    patterns: {
+      structure: Record<string, unknown>;
+      parameters: Record<string, unknown>;
+      interactions: Record<string, unknown>;
+    };
+    confidence: number;
+  }>> {
+    try {
+      const response = await this.client.post('/api/workflows/learn-pattern', {
+        referenceWorkflow: workflow,
+        referenceEndpoints: endpoints,
+      });
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Auto-build workflows using learned patterns
+   */
+  async autoBuildWorkflows(
+    suggestedFlows: Array<Record<string, unknown>>,
+    learnedPatterns: Record<string, unknown>,
+    endpoints: APIEndpoint[],
+    specId: string
+  ): Promise<BackendResponse<{
+    workflows: Array<{
+      flow_id: string;
+      workflow: Record<string, unknown>;
+      applied_patterns: string[];
+    }>;
+  }>> {
+    try {
+      const response = await this.client.post('/api/workflows/auto-build-flows', {
+        suggestedFlows,
+        learnedPatterns,
+        endpoints,
+        specId,
+      });
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
    * Test an API endpoint
    */
   async testEndpoint(

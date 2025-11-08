@@ -125,9 +125,9 @@ public/           # Static assets (put banner image here)
 
 ## OpenAPI Workflow Integration
 
-This project integrates with the [Magoc backend](https://github.com/rkendel1/Magoc) to process OpenAPI specifications and create conversational workflows.
+This project integrates with the Magoc Python backend to process OpenAPI specifications and create conversational workflows.
 
-> **Important**: The Magoc backend is a powerful Python-based MCP (Model Context Protocol) toolkit designed specifically for API spec evaluation. It features the automagik-genie orchestrator that transforms any API into an intelligent agent. All AI-powered workflow generation should leverage this specialized backend rather than being implemented in the Next.js layer.
+> **Important**: The Magoc backend is a powerful Python-based MCP (Model Context Protocol) toolkit designed specifically for API spec evaluation. It features the automagik-genie orchestrator that transforms any API into an intelligent agent. All AI-powered workflow generation is handled by this specialized backend rather than being implemented in the Next.js layer.
 
 ### Architecture
 
@@ -137,16 +137,61 @@ This project integrates with the [Magoc backend](https://github.com/rkendel1/Mag
 
 See [docs/BACKEND_DELEGATION_ARCHITECTURE.md](docs/BACKEND_DELEGATION_ARCHITECTURE.md) for complete architectural details.
 
-### Quick Start
+### Backend Setup
 
-1. Start the Magoc backend:
-   ```bash
-   uvx automagik-tools@latest serve --tool genie --transport sse --port 8000
-   ```
+This repository includes a complete Python backend implementation in `magoc-backend/` that can be:
+1. Run locally for development
+2. Dropped into the [Magoc repository](https://github.com/rkendel1/Magoc) for production integration
 
-2. Add the backend URL to `.env`:
+#### Running the Python Backend Locally
+
+```bash
+# Navigate to the backend directory
+cd magoc-backend
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+# Edit .env and add your OPENAI_API_KEY
+
+# Run the server
+uvicorn magoc_workflow_extensions.api:app --reload --port 8000
+
+# Or using Python directly
+python -m magoc_workflow_extensions.api
+```
+
+#### Using Docker
+
+```bash
+cd magoc-backend
+docker build -t magoc-workflow-backend .
+docker run -p 8000:8000 -e OPENAI_API_KEY=your-key magoc-workflow-backend
+```
+
+#### Integration with Magoc Repository
+
+To integrate with the official Magoc repository:
+
+```bash
+# Copy the backend directory to Magoc
+cp -r magoc-backend/* /path/to/Magoc/
+
+# Follow the setup instructions in magoc-backend/README.md
+```
+
+### Frontend Setup
+
+1. Configure the backend URL in `.env`:
    ```
    NEXT_PUBLIC_MAGOC_BACKEND_URL=http://localhost:8000
+   ```
+
+2. Start the Next.js development server:
+   ```bash
+   npm run dev
    ```
 
 3. Access the API Builder at `/openapi-builder` after signing in
@@ -164,9 +209,9 @@ The Natural Language Flow Builder allows you to describe your desired workflow i
 For detailed documentation, see:
 - [Backend Delegation Architecture](docs/BACKEND_DELEGATION_ARCHITECTURE.md) - Understanding the proper architecture
 - [Refactoring Guide](docs/REFACTORING_GUIDE.md) - How to delegate operations to Magoc
-- [Before/After Comparison](docs/BEFORE_AFTER_COMPARISON.md) - See the benefits of proper delegation
 - [Natural Language Flow](docs/NATURAL_LANGUAGE_FLOW.md) - Feature documentation
 - [Magoc Integration](docs/MAGOC_INTEGRATION.md) - Integration instructions
+- [Python Backend README](magoc-backend/README.md) - Backend API documentation
 
 ## Notes on Convex
 
