@@ -72,5 +72,35 @@ export default defineSchema({
     })),
     createdAt: v.number(),
     updatedAt: v.number()
+  }),
+  suggestedFlows: defineTable({
+    flowId: v.string(),
+    name: v.string(),
+    description: v.string(),
+    useCase: v.string(),
+    category: v.string(),
+    complexity: v.string(), // 'simple', 'moderate', 'complex'
+    endpoints: v.array(v.string()), // Array of endpoint IDs
+    specId: v.string(),
+    user: v.id("users"),
+    isConfigured: v.optional(v.boolean()), // Has user configured this flow yet
+    configuredWorkflowId: v.optional(v.string()), // Link to configured workflow
+    createdAt: v.number(),
+    updatedAt: v.number()
+  }),
+  flowPatterns: defineTable({
+    patternId: v.string(),
+    name: v.string(),
+    description: v.optional(v.string()),
+    specId: v.string(),
+    user: v.id("users"),
+    // The "reference" workflow that defines how flows should look/feel/work
+    referenceWorkflowId: v.string(),
+    // Learned patterns from the reference workflow
+    patterns: v.any(), // Contains UI patterns, interaction patterns, styling rules, etc.
+    isActive: v.optional(v.boolean()), // Is this pattern currently being used for auto-generation
+    generatedFlowsCount: v.optional(v.number()), // How many flows were generated using this pattern
+    createdAt: v.number(),
+    updatedAt: v.number()
   })
 })
