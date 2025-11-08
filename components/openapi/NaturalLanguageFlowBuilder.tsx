@@ -78,8 +78,10 @@ const NaturalLanguageFlowBuilder: React.FC<NaturalLanguageFlowBuilderProps> = ({
 
   const handleSuggestedFlowSelected = (flow: SuggestedFlow) => {
     setSelectedSuggestedFlow(flow);
+    setViewMode('custom'); // Switch to custom mode to show the generation
     // Generate workflow from the selected suggested flow
     const flowDescription = `${flow.description}. ${flow.useCase}`;
+    setDescription(flowDescription);
     handleGenerate(flowDescription);
   };
 
